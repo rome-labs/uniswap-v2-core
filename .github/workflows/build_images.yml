@@ -32,14 +32,14 @@ jobs:
           context: .
           push: true
           file: Dockerfile
-          tags: romeprotocol/uniswap-v2-core:${{env.REF_NAME}}
-          labels: romeprotocol/uniswap-v2-core:${{env.REF_NAME}}
+          tags: romelabs/uniswap-v2-core:${{env.REF_NAME}}
+          labels: romelabs/uniswap-v2-core:${{env.REF_NAME}}
 
       - name: 'Set latest tag'
         if: |
           ( ${{github.ref_name}} == 'main' )
         run: |
           
-          docker pull romeprotocol/uniswap-v2-core:${REF_NAME}
-          docker tag romeprotocol/uniswap-v2-core:${REF_NAME} romeprotocol/uniswap-v2-core:latest
-          docker push romeprotocol/uniswap-v2-core:latest
+          docker pull romelabs/uniswap-v2-core:${REF_NAME}
+          docker tag romelabs/uniswap-v2-core:${REF_NAME} romelabs/uniswap-v2-core:latest
+          docker push romelabs/uniswap-v2-core:latest

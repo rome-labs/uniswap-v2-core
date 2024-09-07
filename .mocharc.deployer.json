@@ -1,0 +1,5 @@
+{
+  "spec": "./test/UniSwapV2CrossRollup.spec.ts",
+  "require": "ts-node/register",
+  "timeout": 60000
+}

@@ -1,0 +1,10 @@
+{
+  "extension": ["ts"],
+  "spec": [
+    "./test/UniswapV2ERC20.spec.ts",
+    "./test/UniswapV2Factory.spec.ts",
+    "./test/UniswapV2Pair.spec.ts"
+  ],
+  "require": "ts-node/register",
+  "timeout": 60000
+}

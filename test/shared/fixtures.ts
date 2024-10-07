@@ -15,7 +15,8 @@ export const RPC_URL =
   NETWORK === "proxy" ? "http://proxy:9090" :
   NETWORK === "proxy2" ? "http://proxy2:9090" :
   NETWORK === "op-geth"  ? "http://geth:8545" :
-  NETWORK === "op-geth2"  ? "http://geth2:8546" : ""; 
+  NETWORK === "op-geth2"  ? "http://geth2:8546" :
+  NETWORK === "local-op-geth" ? "http://localhost:8545" : "";
 console.log(`rpc_url:`, RPC_URL);
 
 export const CHAIN_ID = Number(process.env.CHAIN_ID);

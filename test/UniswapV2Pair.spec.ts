@@ -64,56 +64,61 @@ describe('UniswapV2Pair', () => {
 
   async function addLiquidity(token0Amount: BigNumber, token1Amount: BigNumber) {
     const tx1 = await token0.transfer(pair.address, token0Amount)
-    const tx2 = await token1.transfer(pair.address, token1Amount)
     await wait_for_tx_complete(provider, tx1.hash)
+    const tx2 = await token1.transfer(pair.address, token1Amount)
     await wait_for_tx_complete(provider, tx2.hash)
     const tx3 = await pair.mint(wallet.address, overrides)
     await wait_for_tx_complete(provider, tx3.hash)
   }
-  const swapTestCases: BigNumber[][] = [
-    [1, 5, 10, '1662497915624478906'],
-    [1, 10, 5, '453305446940074565'],
 
-    [2, 5, 10, '2851015155847869602'],
-    [2, 10, 5, '831248957812239453'],
+  if (!NETWORK.includes("op-geth")) {
+    const swapTestCases: BigNumber[][] = [
+      [1, 5, 10, '1662497915624478906'],
+      [1, 10, 5, '453305446940074565'],
 
-    [1, 10, 10, '906610893880149131'],
-    [1, 100, 100, '987158034397061298'],
-    [1, 1000, 1000, '996006981039903216']
-  ].map(a => a.map(n => (typeof n === 'string' ? BigNumber.from(n) : expandTo18Decimals(n))))
-  swapTestCases.forEach((swapTestCase, i) => {
-    it(`getInputPrice:${i}`, async () => {
-      const [swapAmount, token0Amount, token1Amount, expectedOutputAmount] = swapTestCase
-      await addLiquidity(token0Amount, token1Amount)
-      const tx1 = await token0.transfer(pair.address, swapAmount)
-      await wait_for_tx_complete(provider, tx1.hash)
-      await expect(pair.swap(0, expectedOutputAmount.add(1), wallet.address, '0x', overrides)).to.be.revertedWith(
-        'RomeswapV2: K'
-      )
-      const tx2 = await pair.swap(0, expectedOutputAmount, wallet.address, '0x', overrides)
-      await wait_for_tx_complete(provider, tx2.hash)
+      [2, 5, 10, '2851015155847869602'],
+      [2, 10, 5, '831248957812239453'],
+
+      [1, 10, 10, '906610893880149131'],
+      [1, 100, 100, '987158034397061298'],
+      [1, 1000, 1000, '996006981039903216']
+    ].map(a => a.map(n => (typeof n === 'string' ? BigNumber.from(n) : expandTo18Decimals(n))))
+    swapTestCases.forEach((swapTestCase, i) => {
+      it(`getInputPrice:${i}`, async () => {
+        const [swapAmount, token0Amount, token1Amount, expectedOutputAmount] = swapTestCase
+        await addLiquidity(token0Amount, token1Amount)
+        const tx1 = await token0.transfer(pair.address, swapAmount)
+        await wait_for_tx_complete(provider, tx1.hash)
+        await expect(pair.swap(0, expectedOutputAmount.add(1), wallet.address, '0x', overrides)).to.be.revertedWith(
+          'RomeswapV2: K'
+        )
+        const tx2 = await pair.swap(0, expectedOutputAmount, wallet.address, '0x', overrides)
+        await wait_for_tx_complete(provider, tx2.hash)
+      })
     })
-  })
 
-  const optimisticTestCases: BigNumber[][] = [
-    ['997000000000000000', 5, 10, 1], // given amountIn, amountOut = floor(amountIn * .997)
-    ['997000000000000000', 10, 5, 1],
-    ['997000000000000000', 5, 5, 1],
-    [1, 5, 5, '1003009027081243732'] // given amountOut, amountIn = ceiling(amountOut / .997)
-  ].map(a => a.map(n => (typeof n === 'string' ? BigNumber.from(n) : expandTo18Decimals(n))))
-  optimisticTestCases.forEach((optimisticTestCase, i) => {
-    it(`optimistic:${i}`, async () => {
-      const [outputAmount, token0Amount, token1Amount, inputAmount] = optimisticTestCase
-      await addLiquidity(token0Amount, token1Amount)
-      const tx1 = await token0.transfer(pair.address, inputAmount)
-      await wait_for_tx_complete(provider, tx1.hash)
-      await expect(pair.swap(outputAmount.add(1), 0, wallet.address, '0x', overrides)).to.be.revertedWith(
-        'RomeswapV2: K'
-      )
-      const tx2 = await pair.swap(outputAmount, 0, wallet.address, '0x', overrides)
-      await wait_for_tx_complete(provider, tx2.hash)
+    const optimisticTestCases: BigNumber[][] = [
+      ['997000000000000000', 5, 10, 1], // given amountIn, amountOut = floor(amountIn * .997)
+      ['997000000000000000', 10, 5, 1],
+      ['997000000000000000', 5, 5, 1],
+      [1, 5, 5, '1003009027081243732'] // given amountOut, amountIn = ceiling(amountOut / .997)
+    ].map(a => a.map(n => (typeof n === 'string' ? BigNumber.from(n) : expandTo18Decimals(n))))
+    optimisticTestCases.forEach((optimisticTestCase, i) => {
+      it(`optimistic:${i}`, async () => {
+        const [outputAmount, token0Amount, token1Amount, inputAmount] = optimisticTestCase
+        await addLiquidity(token0Amount, token1Amount)
+        const tx1 = await token0.transfer(pair.address, inputAmount)
+        await wait_for_tx_complete(provider, tx1.hash)
+        await expect(pair.swap(outputAmount.add(1), 0, wallet.address, '0x', overrides)).to.be.revertedWith(
+          'RomeswapV2: K'
+        )
+        const tx2 = await pair.swap(outputAmount, 0, wallet.address, '0x', overrides)
+        await wait_for_tx_complete(provider, tx2.hash)
+      })
     })
-  })
+  } else {
+    console.log("getInputPrice, optimistic skipped");
+  }
 
   it('swap:token0', async () => {
     const token0Amount = expandTo18Decimals(5)

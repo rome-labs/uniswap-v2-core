@@ -5,6 +5,7 @@ RUN apk add git
 RUN apk add python3
 RUN apk add make
 RUN apk add g++
+RUN apk add curl
 
 COPY . /opt
 WORKDIR /opt

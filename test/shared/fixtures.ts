@@ -13,6 +13,7 @@ console.log(`network:`, NETWORK);
 
 export const RPC_URL = 
   NETWORK === "proxy" ? "http://proxy:9090" :
+  NETWORK === "local" ? "http://localhost:9090" :
   NETWORK === "proxy2" ? "http://proxy2:9090" :
   NETWORK === "op-geth"  ? "http://geth:8545" :
   NETWORK === "op-geth2"  ? "http://geth2:8546" :
